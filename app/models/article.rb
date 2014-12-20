@@ -28,7 +28,6 @@ class Article < ActiveRecord::Base
     date_string = info_section.css('div.article-metaline span.article-meta-value')[2].text
     self.date = Time.parse(date_string)
     info_section.search('.//div').remove
-    content = info_section.text.split('※ 發信站: 批踢踢實業坊(ptt.cc), 來自:')[0]
     self.content = content.gsub("\n", '<br />')
     old_comment_author = ""
     puts self.comment_authors
