@@ -41,12 +41,9 @@ class Article < ActiveRecord::Base
     end
     comment = nil
     pushes.each do |p|
-      puts 'do pushes'
       puts p.text
       comment_author = p.css('span.push-userid')[0].text
-      puts 'comment_authors', comment_authors
       if comment_authors.empty? or comment_authors.include?(comment_author)
-        puts 'author ok'
         comment = self.comments.build
         comment.author = comment_author
         comment.content = p.css('span.push-content')[0].text
