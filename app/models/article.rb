@@ -6,7 +6,9 @@ class Article < ActiveRecord::Base
   def parse_url
     source_uri = URI.parse(self.source_url)
     if ['www.facebook.com'].include?(source_uri.try(:host))
-      parse_facebook_content
+      agent = Mechanize.new
+      reult = agent.get(self.source_url)
+      parse_facebook_content(result.body)
     elsif ['www.ptt.cc'].include?(source_uri.try(:host))
       if source_uri.path.include?('Gossiping')
         agent = Mechanize.new
@@ -52,6 +54,16 @@ class Article < ActiveRecord::Base
 
 
   def self.parse_facebook_content
+    html = Nokogiri::HTML(body)
+    self.title = html.title
+    content = html.css('div.userContent')[0].text
+    self.content = content.gsub("\n", '<br />')
+    comments = html.css('li.UFIRow.UFIComment.display.UFIComponent')
+    comments.each do |c|
+      comment = self.comments.build
+      comment.author = c.css('a.UFICommentActorName').text
+      comment.content = c.css('span.UFICommentBody').text
+    end
   end
 
   private
