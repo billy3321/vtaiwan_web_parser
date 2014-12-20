@@ -46,11 +46,11 @@ class Article < ActiveRecord::Base
       comment_author = p.css('span.push-userid')[0].text
       if @comment_authors_list.empty? or @comment_authors_list.include?(comment_author)
         if comment and comment.author == comment_author
-          comment.content << "<br />" + p.css('span.push-content')[0].text
+          comment.content << "<br />" + p.css('span.push-content')[0].text[2..-1]
         else
           comment = self.comments.build
           comment.author = comment_author
-          comment.content = p.css('span.push-content')[0].text
+          comment.content = p.css('span.push-content')[0].text[2..-1]
         end
       end
     end
