@@ -9,13 +9,11 @@
     thead
       tr
         th = sort_link @q, :title, "標題"
-        th = sort_link @q, :content, "內容"
         th colspan="3"
     tbody
       - for article in @articles do
         tr
           td #{article.title}
-          td #{article.content}
           td = link_to "閱讀", article, class: "btn"
           td = link_to "修改", edit_article_path(article), class: "btn"
           td = link_to "刪除", article, method: :delete, data: { confirm: "Are you sure?" }, class: "btn"
