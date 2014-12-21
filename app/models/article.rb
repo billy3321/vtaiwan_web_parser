@@ -55,9 +55,7 @@ class Article < ActiveRecord::Base
 
   def parse_fb_photo(photo_id)
     fb_graph_api = get_app_fb_graph_api
-    puts self.user.access_token
     photo_content = fb_graph_api.get_object(photo_id)
-    puts photo_content.inspect
     self.image = photo_content["source"]
     self.title = photo_content["name"][0..20]
     self.content = photo_content["name"].gsub("\n", "<br />")
@@ -77,7 +75,7 @@ class Article < ActiveRecord::Base
   end
 
   def parse_fb_post(post_id)
-    fb_graph_api = get_app_fb_graph_api
+    fb_graph_api = get_user_fb_graph_api
     post_content = fb_graph_api.get_object(post_id)
     self.title = post_content["message"][0..20]
     self.content = post_content["message"].gsub("\n", "<br />")
