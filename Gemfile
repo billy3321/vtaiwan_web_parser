@@ -31,6 +31,11 @@ gem 'settingslogic'
 gem 'httparty_with_cookies'
 gem 'mechanize'
 gem 'kaminari'
+gem 'koala'
+gem 'fb_graph'
+gem 'fb_graph2'
+gem 'devise'
+gem 'omniauth-facebook'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

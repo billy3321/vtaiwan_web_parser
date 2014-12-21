@@ -1,3 +1,11 @@
 h1 This is root
 
 = link_to '文章解析器', articles_path
+
+- if user_signed_in?
+  = current_user.name
+  = current_user.provider
+  = link_to "Change your password", edit_user_registration_path
+  = link_to '登出', destroy_user_session_path, method: :delete
+- else
+  = link_to '登入', new_user_session_path

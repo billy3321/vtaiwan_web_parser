@@ -6,6 +6,7 @@ class Article < ActiveRecord::Base
   def parse_url
     source_uri = URI.parse(self.source_url)
     if ['www.facebook.com'].include?(source_uri.try(:host))
+      if user_signed_in?
       agent = Mechanize.new
       result = agent.get(self.source_url)
       parse_facebook_content(result.body)
@@ -55,7 +56,6 @@ class Article < ActiveRecord::Base
       end
     end
   end
-
 
   def parse_facebook_content(body)
     html = Nokogiri::HTML(body)

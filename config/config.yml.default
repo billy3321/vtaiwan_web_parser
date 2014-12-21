@@ -1,0 +1,17 @@
+defaults: &defaults
+  facebook_auth_key:
+    app_id: ""
+    app_secret: ""
+
+development:
+  <<: *defaults
+  admin_email: "admin@test.com"
+  smtp_settings:
+    mail_username: ""
+    mail_password: ""
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
