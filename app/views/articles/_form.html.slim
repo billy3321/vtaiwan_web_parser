@@ -8,6 +8,7 @@
         - @article.errors.full_messages.each do |message|
           li = message
 
+  = f.hidden_field :user_id, :value => current_user.id
   .form-group
     h4 
       = f.label :source_url, "文章來源", class: "control-label col-md-3"

@@ -2,6 +2,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
   def change
     create_table(:users) do |t|
       ## Database authenticatable
+      t.string :name,               null: false, default: ""
       t.string :email,              null: false, default: ""
       t.string :encrypted_password, null: false, default: ""
 
@@ -33,6 +34,7 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string :provider
       t.string :provider_uid, :unique => true
       t.string :provider_token
+      t.datetime :provider_expires_at
 
 
       t.timestamps

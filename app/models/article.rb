@@ -1,15 +1,45 @@
 class Article < ActiveRecord::Base
   has_many :comments
+  belongs_to :user
 
-  before_save :parse_url
+  before_save :parse_comment_authors, :parse_url
+
+  def get_app_fb_graph_api
+    @fb_app_graph_api ||= Koala::Facebook::API.new([
+      Setting.facebook_auth_key.app_id,
+      Setting.facebook_auth_key.app_secret].join('|'))
+  end
+
+  def get_user_fb_graph_api
+    self.user.refresh_facebook_token
+    @fb_user_graph_api = Koala::Facebook::API.new(self.user.access_token)
+  end
+
+  def parse_comment_authors
+    unless self.comment_authors.strip.empty?
+      @comment_authors_list = self.comment_authors.split(',')
+      @comment_authors_list.collect(&:strip)
+    else
+      @comment_authors_list = []
+    end
+  end
 
   def parse_url
     source_uri = URI.parse(self.source_url)
     if ['www.facebook.com'].include?(source_uri.try(:host))
-      if user_signed_in?
-      agent = Mechanize.new
-      result = agent.get(self.source_url)
-      parse_facebook_content(result.body)
+      path_elements = source_uri.path.split('/')
+      if path_elements[1] == 'photo.php'
+        photo_id = CGI::parse(source_uri.query)['fbid'].first
+        puts photo_id
+        parse_fb_photo(photo_id)
+      elsif path_elements[2] == 'posts'
+        fb_user_name = path_elements[1]
+        fb2_graph_api = Koala::Facebook::API.new
+        fb_user_id = fb2_graph_api.get_object(fb_user_name)['id']
+        post_id = [fb_user_id, path_elements[3]].join('_')
+        puts post_id
+        parse_fb_post(post_id)
+      end
     elsif ['www.ptt.cc'].include?(source_uri.try(:host))
       if source_uri.path.include?('Gossiping')
         agent = Mechanize.new
@@ -19,6 +49,48 @@ class Article < ActiveRecord::Base
         agent = Mechanize.new
         result = agent.get(self.source_url)
         parse_ptt_content(result.body)
+      end
+    end
+  end
+
+  def parse_fb_photo(photo_id)
+    fb_graph_api = get_app_fb_graph_api
+    puts self.user.access_token
+    photo_content = fb_graph_api.get_object(photo_id)
+    puts photo_content.inspect
+    self.image = photo_content["source"]
+    self.title = photo_content["name"][0..20]
+    self.content = photo_content["name"].gsub("\n", "<br />")
+    self.source_url = photo_content["link"]
+    comment_id = photo_id + '/comments'
+    comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+    self.comments.delete_all
+    comments.each do |c|
+      comment_author = c["from"]["name"]
+      if @comment_authors_list.empty? or @comment_authors_list.include?(comment_author)
+        comment = self.comments.build
+        comment.author = comment_author
+        comment.content = c["message"].gsub("\n", "<br />")
+        comment.like = c["like_count"]
+      end
+    end
+  end
+
+  def parse_fb_post(post_id)
+    fb_graph_api = get_app_fb_graph_api
+    post_content = fb_graph_api.get_object(post_id)
+    self.title = post_content["message"][0..20]
+    self.content = post_content["message"].gsub("\n", "<br />")
+    comment_id = post_id + '/comments'
+    comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+    self.comments.delete_all
+    comments.each do |c|
+      comment_author = c["from"]["name"]
+      if @comment_authors_list.empty? or @comment_authors_list.include?(comment_author)
+        comment = self.comments.build
+        comment.author = comment_author
+        comment.content = c["message"].gsub("\n", "<br />")
+        comment.like = c["like_count"]
       end
     end
   end
@@ -33,13 +105,7 @@ class Article < ActiveRecord::Base
     info_section.search('.//div').remove
     self.content = info_section.text.gsub("\n", '<br />')
     old_comment_author = ""
-    puts self.comment_authors
-    unless self.comment_authors.strip.empty?
-      @comment_authors_list = self.comment_authors.split(',')
-      @comment_authors_list.collect(&:strip)
-    else
-      @comment_authors_list = []
-    end
+
     comment = nil
     self.comments.delete_all
     pushes.each do |p|

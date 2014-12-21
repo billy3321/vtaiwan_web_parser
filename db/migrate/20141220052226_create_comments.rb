@@ -4,7 +4,7 @@ class CreateComments < ActiveRecord::Migration
       t.integer :article_id
       t.string :author
       t.text :content
-      t.integer :likes
+      t.integer :like
 
       t.timestamps null: false
     end
