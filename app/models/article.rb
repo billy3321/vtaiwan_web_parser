@@ -12,7 +12,7 @@ class Article < ActiveRecord::Base
 
   def get_user_fb_graph_api
     self.user.refresh_facebook_token
-    @fb_user_graph_api = Koala::Facebook::API.new(self.user.access_token)
+    @fb_user_graph_api = Koala::Facebook::API.new(self.user.access_token,  Setting.facebook_auth_key.app_secret)
   end
 
   def parse_comment_authors
