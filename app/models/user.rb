@@ -9,7 +9,6 @@ class User < ActiveRecord::Base
   def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
     # Facebook 登入相關功能
     user = User.where(:provider => auth.provider, :provider_uid => auth.uid).first
-    puts auth.info
     if user
       user.provider_token = auth.credentials.token
       user.provider_expires_at = Time.at(auth.credentials.expires_at)

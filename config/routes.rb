@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   match '/about',    to: 'static_pages#about',    via: 'get'
 
   resources :articles
-  resources :comments
+
+  # Seems no need to get single comment
+  # resources :comments
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'

@@ -1,6 +1,7 @@
 class Article < ActiveRecord::Base
   has_many :comments, dependent: :destroy
   belongs_to :user
+  validates_presence_of :source_url, message: '請填寫網址'
 
   before_save :parse_comment_authors, :parse_url
 
@@ -21,7 +22,7 @@ class Article < ActiveRecord::Base
 
 
   def parse_comment_authors
-    # 解析comment_authors成為array
+    # 解析comment_authors成為array，方便後續存取
     unless self.comment_authors.strip.empty?
       @comment_authors_list = self.comment_authors.split(',')
       @comment_authors_list.collect(&:strip)
@@ -46,6 +47,8 @@ class Article < ActiveRecord::Base
         fb_user_id = fb2_graph_api.get_object(fb_user_name)['id']
         post_id = [fb_user_id, path_elements[3]].join('_')
         parse_fb_post(post_id)
+      else
+        return false
       end
     # PTT 除了八卦版以外都是直接抓，八卦版需支援cookie，點選十八歲確認按鈕後才可解析。
     elsif ['www.ptt.cc'].include?(source_uri.try(:host))
@@ -58,9 +61,14 @@ class Article < ActiveRecord::Base
         result = agent.get(self.source_url)
         parse_ptt_content(result.body)
       end
+    # 除此之外不儲存
+    else
+      return false
     end
   end
 
+  def check_content
+  end
 
   def parse_fb_photo(photo_id)
     # 解析 FB 照片內容
@@ -136,7 +144,7 @@ class Article < ActiveRecord::Base
 
 
   def parse_facebook_content(body)
-    # 用 Nokogiri 解析 FB 內容（已廢棄）
+    # 用 Nokogiri 解析 FB 內容（暫時不會用到）
     html = Nokogiri::HTML(body)
     return html
     self.title = html.title

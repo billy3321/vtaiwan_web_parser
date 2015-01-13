@@ -1,6 +1,6 @@
 class ArticlesController < ApplicationController
-  before_action :set_article, except: [:show, :index]
-  before_filter :authenticate_user!, except: [:show, :index]
+  before_action :set_article, except: [:new, :index]
+  before_action :authenticate_user!, except: [:show, :index]
 
   # GET /articles
   # GET /articles.json
