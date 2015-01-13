@@ -1,10 +1,22 @@
-h1 This is root
+h1 vTaiwan 解析器
 
-= link_to '文章解析器', articles_path
-br
+
 - if user_signed_in?
-  = current_user.name
-  = current_user.provider
-  = link_to '登出', destroy_user_session_path, method: :delete
-- else
-  = link_to '登入', new_user_session_path
+  p
+    | 您現在以
+    = current_user.name
+    | 的身分登入。
+
+br
+p
+  | 請點選
+
+  = link_to '所有文章', articles_path
+
+  | 以查看解析出來的文章，或點選
+
+  = link_to '新增文章', new_article_path
+
+  | 新增一篇文章。新增文章必須以Facebook身分登入，才可繼續。
+
+br

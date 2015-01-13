@@ -34,6 +34,7 @@ gem 'kaminari'
 gem 'koala'
 gem 'devise'
 gem 'omniauth-facebook'
+gem "twitter-bootstrap-rails"
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
@@ -47,7 +48,7 @@ gem 'omniauth-facebook'
 group :development, :test do
   gem 'minitest'
   gem "capybara"
-  gem 'rspec-rails'
+  gem 'rspec-rails', '2.13.1'
   gem 'database_cleaner'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
 

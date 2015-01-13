@@ -1,6 +1,6 @@
 class ArticlesController < ApplicationController
-  before_action :set_article, only: [:show, :edit, :update, :destroy, :create]
-  before_filter :authenticate_user!, only: [:new, :create, :edit, :update, :destroy]
+  before_action :set_article, except: [:show, :index]
+  before_filter :authenticate_user!, except: [:show, :index]
 
   # GET /articles
   # GET /articles.json
@@ -30,7 +30,7 @@ class ArticlesController < ApplicationController
   # POST /articles
   def create
     if @article.save
-      redirect_to @article, notice: 'Article was successfully created.'
+      redirect_to @article, notice: '文章成功建立！'
     else
       render :new
     end
@@ -39,7 +39,7 @@ class ArticlesController < ApplicationController
   # PATCH/PUT /articles/1
   def update
     if @article.update(article_params)
-      redirect_to @article, notice: 'Article was successfully updated.'
+      redirect_to @article, notice: '文章成功更新！'
     else
       render :edit
     end
@@ -48,7 +48,7 @@ class ArticlesController < ApplicationController
   # DELETE /articles/1
   def destroy
     @article.destroy
-    redirect_to articles_url, notice: 'Article was successfully destroyed.'
+    redirect_to articles_url, notice: '文章已被刪除。'
   end
 
   private

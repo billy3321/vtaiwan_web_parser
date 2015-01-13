@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_many :articles
 
   def self.find_for_facebook_oauth(auth, signed_in_resource=nil)
+    # Facebook 登入相關功能
     user = User.where(:provider => auth.provider, :provider_uid => auth.uid).first
     puts auth.info
     if user

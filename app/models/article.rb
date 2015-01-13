@@ -1,21 +1,27 @@
 class Article < ActiveRecord::Base
-  has_many :comments
+  has_many :comments, dependent: :destroy
   belongs_to :user
 
   before_save :parse_comment_authors, :parse_url
 
+
   def get_app_fb_graph_api
+    # 取得 FB app access token
     @fb_app_graph_api ||= Koala::Facebook::API.new([
       Setting.facebook_auth_key.app_id,
       Setting.facebook_auth_key.app_secret].join('|'))
   end
 
+
   def get_user_fb_graph_api
+    # 取得 FB 使用者 access token
     self.user.refresh_facebook_token
     @fb_user_graph_api = Koala::Facebook::API.new(self.user.access_token,  Setting.facebook_auth_key.app_secret)
   end
 
+
   def parse_comment_authors
+    # 解析comment_authors成為array
     unless self.comment_authors.strip.empty?
       @comment_authors_list = self.comment_authors.split(',')
       @comment_authors_list.collect(&:strip)
@@ -24,22 +30,24 @@ class Article < ActiveRecord::Base
     end
   end
 
+
   def parse_url
+    # 解析貼上的網址
     source_uri = URI.parse(self.source_url)
+    # Facebook分為照片及網址，這兩個解析方式不一樣。另外，FB網誌暫時無法解析（API不支援）
     if ['www.facebook.com'].include?(source_uri.try(:host))
       path_elements = source_uri.path.split('/')
       if path_elements[1] == 'photo.php'
         photo_id = CGI::parse(source_uri.query)['fbid'].first
-        puts photo_id
         parse_fb_photo(photo_id)
       elsif path_elements[2] == 'posts'
         fb_user_name = path_elements[1]
         fb2_graph_api = Koala::Facebook::API.new
         fb_user_id = fb2_graph_api.get_object(fb_user_name)['id']
         post_id = [fb_user_id, path_elements[3]].join('_')
-        puts post_id
         parse_fb_post(post_id)
       end
+    # PTT 除了八卦版以外都是直接抓，八卦版需支援cookie，點選十八歲確認按鈕後才可解析。
     elsif ['www.ptt.cc'].include?(source_uri.try(:host))
       if source_uri.path.include?('Gossiping')
         agent = Mechanize.new
@@ -53,7 +61,9 @@ class Article < ActiveRecord::Base
     end
   end
 
+
   def parse_fb_photo(photo_id)
+    # 解析 FB 照片內容
     fb_graph_api = get_app_fb_graph_api
     photo_content = fb_graph_api.get_object(photo_id)
     self.image = photo_content["source"]
@@ -74,7 +84,9 @@ class Article < ActiveRecord::Base
     end
   end
 
+
   def parse_fb_post(post_id)
+    # 解析 FB 貼文內容
     fb_graph_api = get_user_fb_graph_api
     post_content = fb_graph_api.get_object(post_id)
     self.title = post_content["message"][0..20]
@@ -93,7 +105,9 @@ class Article < ActiveRecord::Base
     end
   end
 
+
   def parse_ptt_content(body)
+    # 解析 PTT 網頁
     html = Nokogiri::HTML(body)
     self.title = html.at('meta[property="og:title"]')['content']
     info_section = html.css('div#main-container div#main-content.bbs-screen.bbs-content')[0]
@@ -107,7 +121,6 @@ class Article < ActiveRecord::Base
     comment = nil
     self.comments.delete_all
     pushes.each do |p|
-      puts p.text
       comment_author = p.css('span.push-userid')[0].text
       if @comment_authors_list.empty? or @comment_authors_list.include?(comment_author)
         if comment and comment.author == comment_author
@@ -121,7 +134,9 @@ class Article < ActiveRecord::Base
     end
   end
 
+
   def parse_facebook_content(body)
+    # 用 Nokogiri 解析 FB 內容（已廢棄）
     html = Nokogiri::HTML(body)
     return html
     self.title = html.title
@@ -138,6 +153,7 @@ class Article < ActiveRecord::Base
   private
 
   def check_source_url
+    # 確認網址可用
     begin
       errors.add(:base, 'source url error') unless HTTParty.get(self.youtube_url).code == 200
     rescue
