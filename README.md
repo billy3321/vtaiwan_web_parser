@@ -11,7 +11,7 @@
 
 ## 架站說明
 
-# 設定
+#### 設定
 
 ```
 cp config/config.yml.default config/config.yml
@@ -21,7 +21,7 @@ cp config/database.yml.default config/database.yml
 `config.yml` 內請貼上 Facebook app id及 app secret 。
 `database.yml` 應該不用多做設定。
 
-# 以測試模式開站
+#### 以測試模式開站
 
 ```
 bundle install
@@ -35,9 +35,9 @@ rake db:migrate
 rails server
 ```
 
-即可以測試模式運行。
+即可以測試模式運行，請再瀏覽器中打開 `http://localhost:3000/`
 
-## 測試
+#### 測試
 
 請於目錄中執行：
 
