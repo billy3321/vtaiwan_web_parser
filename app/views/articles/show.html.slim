@@ -9,6 +9,8 @@
   
   - if @article.image and not @article.image.empty?
     p = image_tag(@article.image)
+  - if @article.link and not @article.link.empty?
+    p = link_to @article.link, @article.link
   p
 
   = link_to "修改", edit_article_path(@article), class: "btn"

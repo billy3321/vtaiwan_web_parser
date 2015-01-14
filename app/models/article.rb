@@ -41,11 +41,17 @@ class Article < ActiveRecord::Base
       if path_elements[1] == 'photo.php'
         photo_id = CGI::parse(source_uri.query)['fbid'].first
         parse_fb_photo(photo_id)
+      elsif path_elements[1] == 'permalink.php'
+        link_id = CGI::parse(source_uri.query)['story_fbid'].first
+        parse_fb_link(link_id)
+      elsif path_elements[2] == 'photos'
+        photo_id = path_elements.last
+        parse_fb_photo(photo_id)
       elsif path_elements[2] == 'posts'
         fb_user_name = path_elements[1]
         fb2_graph_api = Koala::Facebook::API.new
         fb_user_id = fb2_graph_api.get_object(fb_user_name)['id']
-        post_id = [fb_user_id, path_elements[3]].join('_')
+        post_id = [fb_user_id, path_elements.last].join('_')
         parse_fb_post(post_id)
       else
         return false
@@ -101,9 +107,37 @@ class Article < ActiveRecord::Base
     # 解析 FB 貼文內容
     fb_graph_api = get_user_fb_graph_api
     post_content = fb_graph_api.get_object(post_id)
-    self.title = post_content["message"][0..20]
+    if post_content["name"]
+      self.title = post_content["name"]
+    else
+      self.title = post_content["message"][0..20]
+    end
     self.content = post_content["message"].gsub("\n", "<br />")
+    self.image = post_content["picture"] if post_content["picture"]
+    self.link = post_content["link"] if post_content["link"]
     comment_id = post_id + '/comments'
+    comments = fb_graph_api.get_object(comment_id, {limit: 100000})
+    self.comments.delete_all
+    comments.each do |c|
+      comment_author = c["from"]["name"]
+      if @comment_authors_list.empty? or @comment_authors_list.include?(comment_author)
+        comment = self.comments.build
+        comment.author = comment_author
+        comment.content = c["message"].gsub("\n", "<br />")
+        comment.like = c["like_count"]
+      end
+    end
+  end
+
+  def parse_fb_link(link_id)
+    # 解析 FB 分享連結內容
+    fb_graph_api = get_user_fb_graph_api
+    link_content = fb_graph_api.get_object(link_id)
+    self.title = link_content["message"]["name"]
+    self.content = link_content["message"].gsub("\n", "<br />")
+    self.link = link_content["link"]
+    self.image = link_content["picture"]
+    comment_id = link_id + '/comments'
     comments = fb_graph_api.get_object(comment_id, {limit: 100000})
     self.comments.delete_all
     comments.each do |c|
