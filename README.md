@@ -11,6 +11,39 @@
 
 ## 架站說明
 
-bundle install
-rails s
+# 設定
 
+```
+cp config/config.yml.default config/config.yml
+cp config/database.yml.default config/database.yml
+```
+
+`config.yml` 內請貼上 Facebook app id及 app secret 。
+`database.yml` 應該不用多做設定。
+
+# 以測試模式開站
+
+```
+bundle install
+rake db:create
+rake db:migrate
+```
+
+最後執行
+
+```
+rails server
+```
+
+即可以測試模式運行。
+
+## 測試
+
+請於目錄中執行：
+
+```
+rake db:create db:migrate RAILS_ENV=test
+rspec spec/
+```
+
+不過，目前測試不涵蓋Facebook，請手動登入測試。
