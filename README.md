@@ -21,7 +21,7 @@ cp config/database.yml.default config/database.yml
 `config.yml` 內請貼上 Facebook app id及 app secret 。
 `database.yml` 應該不用多做設定。
 
-#### 以測試模式開站
+緊接著請執行以下命令，進行初次設定。
 
 ```
 bundle install
@@ -29,7 +29,9 @@ rake db:create
 rake db:migrate
 ```
 
-最後執行
+#### 以測試模式開站
+
+請執行
 
 ```
 rails server
