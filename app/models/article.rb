@@ -87,7 +87,6 @@ class Article < ActiveRecord::Base
     self.title = photo_content["name"][0..20]
     self.content = photo_content["name"].gsub("\n", "<br />")
     self.source_url = photo_content["link"]
-    puts photo_content.inspect
     self.date = Time.parse(photo_content["created_time"])
     img_width = 0
     photo_content["images"].each do | img |
@@ -123,7 +122,6 @@ class Article < ActiveRecord::Base
     self.content = post_content["message"].gsub("\n", "<br />")
     self.image = post_content["picture"] if post_content["picture"]
     self.link = post_content["link"] if post_content["link"]
-    puts post_content.inspect
     self.date = Time.parse(post_content["created_time"])
     comment_id = post_id + '/comments'
     comments = fb_graph_api.get_object(comment_id, {limit: 100000})
