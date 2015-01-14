@@ -6,7 +6,9 @@
     h4 = @article.title
 
   p = @article.content.try(:html_safe)
-
+  
+  - if @article.image and not @article.image.empty?
+    p = image_tag(@article.image)
   p
 
   = link_to "修改", edit_article_path(@article), class: "btn"
@@ -20,6 +22,7 @@
       br
       p 
         = c.content.try(:html_safe)
+
 
   = paginate @comments
 

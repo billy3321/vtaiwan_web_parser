@@ -75,6 +75,13 @@ class Article < ActiveRecord::Base
     self.title = photo_content["name"][0..20]
     self.content = photo_content["name"].gsub("\n", "<br />")
     self.source_url = photo_content["link"]
+    img_width = 0
+    photo_content["images"].each do | img |
+      if img["width"] > img_width
+        img_width = img["width"]
+        self.image = img["source"]
+      end
+    end
     comment_id = photo_id + '/comments'
     comments = fb_graph_api.get_object(comment_id, {limit: 100000})
     self.comments.delete_all
