@@ -37,7 +37,7 @@ rake db:migrate
 rails server
 ```
 
-即可以測試模式運行，請再瀏覽器中打開 `http://localhost:3000/`
+即可以測試模式運行，請在瀏覽器中打開 `http://localhost:3000/`
 
 #### 測試
 
@@ -48,4 +48,4 @@ rake db:create db:migrate RAILS_ENV=test
 rspec spec/
 ```
 
-不過，目前測試不涵蓋Facebook，請手動登入測試。
+不過，因可能需要私密資料，目前測試不涵蓋Facebook，敬請見諒。如要測試，請設置 FB app 等參數，以測試模式運行後登入測試。
