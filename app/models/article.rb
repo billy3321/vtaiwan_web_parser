@@ -38,15 +38,19 @@ class Article < ActiveRecord::Base
     # Facebook分為照片及網址，這兩個解析方式不一樣。另外，FB網誌暫時無法解析（API不支援）
     if ['www.facebook.com'].include?(source_uri.try(:host))
       path_elements = source_uri.path.split('/')
+      # 個人照片
       if path_elements[1] == 'photo.php'
         photo_id = CGI::parse(source_uri.query)['fbid'].first
         parse_fb_photo(photo_id)
+      # 粉絲頁分享連結
       elsif path_elements[1] == 'permalink.php'
         link_id = CGI::parse(source_uri.query)['story_fbid'].first
         parse_fb_link(link_id)
+      # 粉絲頁照片
       elsif path_elements[2] == 'photos'
         photo_id = path_elements.last
         parse_fb_photo(photo_id)
+      # 個人、粉絲頁貼文
       elsif path_elements[2] == 'posts'
         fb_user_name = path_elements[1]
         fb2_graph_api = Koala::Facebook::API.new
@@ -58,10 +62,12 @@ class Article < ActiveRecord::Base
       end
     # PTT 除了八卦版以外都是直接抓，八卦版需支援cookie，點選十八歲確認按鈕後才可解析。
     elsif ['www.ptt.cc'].include?(source_uri.try(:host))
+      # 八卦版
       if source_uri.path.include?('Gossiping')
         agent = Mechanize.new
         result = agent.post('https://www.ptt.cc/ask/over18', {from: source_uri.path, yes: 'yes'})
         parse_ptt_content(result.body)
+      # 其他
       else
         agent = Mechanize.new
         result = agent.get(self.source_url)
