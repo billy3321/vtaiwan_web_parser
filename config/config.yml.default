@@ -2,6 +2,7 @@ defaults: &defaults
   facebook_auth_key:
     app_id: ""
     app_secret: ""
+  timezone: "+08:00"
 
 development:
   <<: *defaults

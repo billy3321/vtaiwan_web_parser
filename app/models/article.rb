@@ -87,6 +87,8 @@ class Article < ActiveRecord::Base
     self.title = photo_content["name"][0..20]
     self.content = photo_content["name"].gsub("\n", "<br />")
     self.source_url = photo_content["link"]
+    puts photo_content.inspect
+    self.date = Time.parse(photo_content["created_time"])
     img_width = 0
     photo_content["images"].each do | img |
       if img["width"] > img_width
@@ -121,6 +123,8 @@ class Article < ActiveRecord::Base
     self.content = post_content["message"].gsub("\n", "<br />")
     self.image = post_content["picture"] if post_content["picture"]
     self.link = post_content["link"] if post_content["link"]
+    puts post_content.inspect
+    self.date = Time.parse(post_content["created_time"])
     comment_id = post_id + '/comments'
     comments = fb_graph_api.get_object(comment_id, {limit: 100000})
     self.comments.delete_all
@@ -143,6 +147,7 @@ class Article < ActiveRecord::Base
     self.content = link_content["message"].gsub("\n", "<br />")
     self.link = link_content["link"]
     self.image = link_content["picture"]
+    self.date = Time.parse(link_content["created_time"])
     comment_id = link_id + '/comments'
     comments = fb_graph_api.get_object(comment_id, {limit: 100000})
     self.comments.delete_all

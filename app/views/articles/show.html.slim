@@ -1,20 +1,22 @@
 .col-md-6.col-md-offset-2
-  p id="notice" = notice
   - provide(:title, @article.title)
 
   p
     h4 = @article.title
 
   p = @article.content.try(:html_safe)
-  
+  p
   - if @article.image and not @article.image.empty?
     p = image_tag(@article.image)
   - if @article.link and not @article.link.empty?
     p = link_to @article.link, @article.link
+  - if @article.date
+    p = @article.date.localtime(Setting.timezone).strftime('%Y-%m-%d %H:%M')
+  = link_to @article.source_url, @article.source_url
   p
 
   = link_to "修改", edit_article_path(@article), class: "btn"
-
+  
   h3 留言
   
   - @comments.each do |c|

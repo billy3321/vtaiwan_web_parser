@@ -17,7 +17,7 @@
           td = link_to "閱讀", article, class: "btn"
           td = link_to "修改", edit_article_path(article), class: "btn"
           td = link_to "刪除", article, method: :delete, data: { confirm: "Are you sure?" }, class: "btn"
-      = paginate @articles
+  = paginate @articles
 
   br
 
