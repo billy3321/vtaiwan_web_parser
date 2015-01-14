@@ -3,9 +3,9 @@
   - provide(:title, @article.title)
 
   p
-    h4 #{@article.title}
+    h4 = @article.title
 
-  p #{@article.content.try(:html_safe)}
+  p = @article.content.try(:html_safe)
 
   p
 
@@ -19,7 +19,7 @@
         = c.author
       br
       p 
-        = c.content.html_safe
+        = c.content.try(:html_safe)
 
   = paginate @comments
 

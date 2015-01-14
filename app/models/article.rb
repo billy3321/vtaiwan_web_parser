@@ -23,7 +23,7 @@ class Article < ActiveRecord::Base
 
   def parse_comment_authors
     # 解析comment_authors成為array，方便後續存取
-    unless self.comment_authors.strip.empty?
+    if self.comment_authors and not self.comment_authors.strip.empty?
       @comment_authors_list = self.comment_authors.split(',')
       @comment_authors_list.collect(&:strip)
     else
@@ -65,9 +65,6 @@ class Article < ActiveRecord::Base
     else
       return false
     end
-  end
-
-  def check_content
   end
 
   def parse_fb_photo(photo_id)

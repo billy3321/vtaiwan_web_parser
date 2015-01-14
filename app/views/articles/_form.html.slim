@@ -8,6 +8,10 @@
         - @article.errors.full_messages.each do |message|
           li = message
 
+  br
+  br
+  br
+
   = f.hidden_field :user_id, :value => current_user.id
   .form-group
     h4 
@@ -17,7 +21,7 @@
 
   .form-group
     h4 
-      = f.label :comment_authors, "特別要收集的留言作者，以「,」分隔", class: "control-label col-md-3"
+      = f.label :comment_authors, "留言作者", class: "control-label col-md-3", hint: "特別要收集的留言作者，以「,」分隔"
     .col-md-6
       = f.input :comment_authors , input_html: { class: "form-control" }, label: false
 
