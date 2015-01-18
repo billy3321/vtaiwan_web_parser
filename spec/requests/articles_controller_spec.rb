@@ -14,35 +14,35 @@ describe "Article" do
     describe "#index with nothing" do
       it "success" do
         get "/articles/"
-        response.should be_success
+        expect(response).to be_success
       end
     end
 
     describe "#show" do
       it "success" do
         get "/articles/#{article.id}"
-        response.should be_success
+        expect(response).to be_success
       end
     end
 
     describe "#new" do
       it "redirect" do
         get "/articles/new"
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
 
     describe "#edit" do
       it "redirect" do
         get "/articles/#{article.id}/edit"
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
 
     describe "#create" do
       it "redirect" do
         post "/articles", :article => new_article
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
 
@@ -51,7 +51,7 @@ describe "Article" do
         article
         update_data = { :source_url => "https://www.ptt.cc/bbs/Gossiping/M.1421070061.A.C38.html" }
         put "/articles/#{article.id}", :article => update_data
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
 
@@ -61,7 +61,7 @@ describe "Article" do
         expect {
           delete "/articles/#{article.id}"
         }.to change { Article.count }.by(0)
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
   end
@@ -72,14 +72,14 @@ describe "Article" do
     describe "#new" do
       it "success" do
         get "/articles/new"
-        response.should be_success
+        expect(response).to be_success
       end
     end
 
     describe "#edit" do
       it "success" do
         get "/articles/#{article.id}/edit"
-        response.should be_success
+        expect(response).to be_success
       end
     end
 
@@ -89,7 +89,7 @@ describe "Article" do
         expect {
           post "/articles", :article => new_article
         }.to change { Article.count }.by(1)
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
 
@@ -98,7 +98,7 @@ describe "Article" do
         article
         update_data = { :source_url => "https://www.ptt.cc/bbs/Gossiping/M.1421070061.A.C38.html" }
         put "/articles/#{article.id}", :article => update_data
-        response.should be_redirect
+        expect(response).to be_redirect
         article.reload
         expect(article.source_url).to match(update_data[:source_url])
         expect(article.title).to match("連勝文6歲、4歲兒子當金控股東")
@@ -111,7 +111,7 @@ describe "Article" do
         expect {
           delete "/articles/#{article.id}"
         }.to change { Article.count }.by(-1)
-        response.should be_redirect
+        expect(response).to be_redirect
       end
     end
   end
