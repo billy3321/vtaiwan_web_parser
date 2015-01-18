@@ -50,7 +50,7 @@ gem 'factory_girl_rails'
 group :development, :test do
   gem 'minitest'
   gem "capybara"
-  gem 'rspec-rails', '2.99'
+  gem 'rspec-rails'
   gem 'database_cleaner'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
 
